@@ -27,7 +27,7 @@ You'll need Chrome installed and chromedriver in your PATH.
 ## Usage
 
 ```bash
-python notion_eqn_fix.py --url "https://notion.so/your-page-url"
+python fix_notion_eqns.py --url "https://notion.so/your-page-url"
 ```
 
 ### Options
