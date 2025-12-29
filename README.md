@@ -65,11 +65,11 @@ python fix_notion_eqns.py --url "https://notion.so/your-page-url"
 - Browser stays open for 10 seconds after completion
 - Mac uses Cmd+Shift+E, Windows uses Ctrl+Shift+E
 
-⚠️ **Warning:** If you attempt to log in too many times via normal email and temporary Notion login code in a short period, Notion may temporarily block you from logging in. If this happens, you'll need to wait before trying again. Otherwise, login via Google account.
+⚠️ **Warning:** If you attempt to log in too many times via normal email and temporary Notion login code in a short period, Notion may temporarily block you from logging in (just in the new chrome profile, all logged in sessions outside this profile will remain active). If this happens, you'll need to wait before trying again. Otherwise, login via Google account.
 
 ## AI Prompt for Generating Notion-Ready Content
 
-Use this prompt with your AI to generate explanations that work perfectly with this script:
+Use this prompt (or similar prompts) with your AI to generate explanations that work perfectly with this script:
 
 ```
 Subject: <INSERT TOPIC HERE>
