@@ -27,28 +27,52 @@ You'll need Chrome installed and chromedriver in your PATH.
 ## Usage
 
 ```bash
-python notion_eqn_fix.py --url "https://notion.so/your-page-url" --email your@email.com
+python notion_eqn_fix.py --url "https://notion.so/your-page-url"
 ```
+
+**⚠️ IMPORTANT:** Close all Chrome windows before running the script (unless using `--no-profile`).
 
 ### Options
 
 - `--url` (required): Notion page URL
-- `--email`: Your Notion email for login (or set NOTION_EMAIL env var)
+- `--email`: Your Notion email for auto-login (optional; or set NOTION_EMAIL env var)
 - `--login-timeout`: Seconds to wait for manual login (default: 600)
+- `--no-profile`: Don't use your Chrome profile (disables Google OAuth login)
 - `--headless`: Run headless (not recommended, you need to enter login code)
 
 ## How login works
 
-1. Script opens the page and enters your email
+**By default (using Chrome profile - enables Google OAuth):**
+1. Script opens the page using your existing Chrome profile
+2. If you're already logged into Notion via Google, it just works
+3. If not, you can sign in with Google using your account and password
+4. Script continues once you're logged in
+
+**With `--email` provided (email/code login):**
+1. Script opens the page and automatically enters your email
 2. Notion sends you a login code
 3. You enter the code in the browser window
 4. Script continues once you're logged in
+
+**Without `--email` (manual email/code login):**
+1. Script opens the page and waits
+2. You manually enter your email in the browser
+3. Notion sends you a login code
+4. You enter the code in the browser window
+5. Script continues once you're logged in
+
+**With `--no-profile` flag:**
+- Disables Chrome profile usage (Google OAuth won't work)
+- You'll need to use email/code login method
+- No need to close Chrome windows
 
 ## Notes
 
 - Processes one equation at a time to avoid DOM issues
 - Browser stays open for 10 seconds after completion
 - Mac uses Cmd+Shift+E, Windows uses Ctrl+Shift+E
+
+⚠️ **Warning:** If you attempt to log in too many times via normal email and temporary Notion login code in a short period, Notion may temporarily block you from logging in. If this happens, you'll need to wait before trying again. Otherwise, login via Google account.
 
 ## AI Prompt for Generating Notion-Ready Content
 

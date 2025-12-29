@@ -62,6 +62,7 @@ def build_driver(headless: bool = False) -> webdriver.Chrome:
     
     Creates a Chrome WebDriver with options optimized for Notion automation,
     including disabled infobars, notifications, and optional headless mode.
+    Uses a temporary browser session for clean automation.
     
     Args:
         headless: If True, run Chrome in headless mode. Not recommended for
@@ -70,17 +71,37 @@ def build_driver(headless: bool = False) -> webdriver.Chrome:
     Returns:
         Configured Chrome WebDriver instance.
     """
-    options = webdriver.ChromeOptions()
-    options.add_argument("--disable-infobars")
-    options.add_argument("--start-maximized")
-    options.add_argument("--disable-notifications")
-    # options.add_argument("--disable-blink-features=AutomationControlled")  # optional; may or may not help
+    opts = webdriver.ChromeOptions()
+    opts.add_argument("--disable-infobars")
+    opts.add_argument("--start-maximized")
+    opts.add_argument("--disable-notifications")
+    opts.add_argument("--no-sandbox")
+    opts.add_argument("--disable-dev-shm-usage")
+    opts.add_argument("--disable-gpu")
+    opts.add_argument("--disable-extensions")
+
+    # Make browser appear non-automated (helps with Google OAuth)
+    opts.add_argument("--disable-blink-features=AutomationControlled")
+    opts.add_experimental_option("excludeSwitches", ["enable-automation"])
+    opts.add_experimental_option('useAutomationExtension', False)
 
     if headless:
         # Not recommended for manual code entry
-        options.add_argument("--headless=new")
+        opts.add_argument("--headless=new")
 
-    return webdriver.Chrome(options=options)
+    driver = webdriver.Chrome(options=opts)
+
+    # Hide webdriver property to avoid detection
+    try:
+        driver.execute_cdp_cmd('Network.setUserAgentOverride', {
+            "userAgent": driver.execute_script("return navigator.userAgent").replace('HeadlessChrome', 'Chrome')
+        })
+        driver.execute_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
+    except Exception:
+        # Non-fatal; continue without stealth tweaks if CDP not available
+        pass
+
+    return driver
 
 
 # -----------------------------
@@ -287,21 +308,19 @@ def enter_email_and_wait_for_manual_code(driver: webdriver.Chrome, email: str, t
     
     Automates the first step of Notion's email-based authentication by entering
     the email address and submitting the form. Then waits for the user to
-    manually enter the verification code sent to their email.
+    manually enter the verification code sent to their email. If no email is
+    provided, waits for manual email entry as well.
     
     Args:
         driver: Chrome WebDriver instance.
-        email: Email address to use for Notion login.
+        email: Email address to use for Notion login. If empty, waits for
+            manual email entry.
         timeout_total: Maximum seconds to wait for manual code entry and
             sign-in completion. Defaults to 600 (10 minutes).
     
     Raises:
-        ValueError: If email is empty or None.
         TimeoutError: If sign-in doesn't complete within timeout_total.
     """
-    if not email:
-        raise ValueError("Email is required for enhanced sign-in. Provide --email or NOTION_EMAIL.")
-
     # Try to find the email input (Notion sometimes uses type=text with an email placeholder)
     email_sel = (
         'input[type="email"], input[name="email"], input[autocomplete="email"], '
@@ -316,19 +335,25 @@ def enter_email_and_wait_for_manual_code(driver: webdriver.Chrome, email: str, t
         # If we can't see it, maybe already logged in or different auth flow
         return
 
-    # Fill + submit
-    try:
-        email_box.click()
-        email_box.clear()
-    except Exception:
-        pass
+    if email:
+        # Auto-fill email if provided
+        try:
+            email_box.click()
+            email_box.clear()
+        except Exception:
+            pass
 
-    email_box.send_keys(email)
-    email_box.send_keys(Keys.ENTER)
+        email_box.send_keys(email)
+        email_box.send_keys(Keys.ENTER)
 
-    print("\n✅ Email entered. Notion should send you a login code.")
-    print("➡️  Please enter the code manually in the opened browser window.")
-    print("   As soon as you're signed in and the page loads, Selenium will continue.\n")
+        print("\n✅ Email entered. Notion should send you a login code.")
+        print("➡️  Please enter the code manually in the opened browser window.")
+        print("   As soon as you're signed in and the page loads, Selenium will continue.\n")
+    else:
+        # Wait for manual email entry
+        print("\n➡️  Please enter your email manually in the opened browser window.")
+        print("   After submitting, Notion will send you a login code to enter.")
+        print("   As soon as you're signed in and the page loads, Selenium will continue.\n")
 
     # Wait until the page canvas appears (meaning login is complete and we're in the page)
     end_time = time.time() + timeout_total
