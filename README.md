@@ -2,7 +2,7 @@
 
 ## Problem
 
-Learning technical topics (AI, math, engineering) is most effective when you spend time practicing and applying concepts, not formatting notes. When you paste AI-generated content with LaTeX equations into Notion, the LaTeX code (`$...$` or `$$...$$`) doesn't render automatically—it appears as plain text. You must manually select each equation and convert it to a Notion equation block, which is tedious and wastes time you could spend actually learning.
+Learning technical topics (AI, math, engineering) is most effective when you spend time practicing and applying concepts, not formatting notes. When you paste AI-generated content with LaTeX equations into Notion, the LaTeX code (`$...$` or `$$...$$`) doesn't render automatically—it appears as plain text. You must manually select each equation and convert it to a Notion equation block, which is tedious and wastes time you could spend actually learning. Moreover, as of the time of making this tool, any of the available public solutions (mostly chrome extensions) do not work as expected.
 
 ## Solution
 
