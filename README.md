@@ -2,11 +2,11 @@
 
 ## Problem
 
-Learning technical topics (AI, math, engineering) is most effective when you spend time practicing and applying concepts, not formatting notes. When you use AI to generate explanations and save them to Notion, manually converting LaTeX equations to Notion's equation blocks is tedious and wastes time you could spend actually learning.
+Learning technical topics (AI, math, engineering) is most effective when you spend time practicing and applying concepts, not formatting notes. When you paste AI-generated content with LaTeX equations into Notion, the LaTeX code (`$...$` or `$$...$$`) doesn't render automatically—it appears as plain text. You must manually select each equation and convert it to a Notion equation block, which is tedious and wastes time you could spend actually learning.
 
 ## Solution
 
-This script automates the conversion. Paste AI-generated content with `$...$` or `$$...$$` equations into Notion, run the script, and all equations are converted to proper Notion equation blocks instantly. More time for practice, less time on formatting.
+This script automates the conversion. Paste AI-generated content with `$...$` or `$$...$$` equations into Notion, run the script, and all equations are converted to proper Notion equation blocks automatically. More time for practice, less time on formatting.
 
 ## What it does
 
